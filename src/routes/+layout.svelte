@@ -1,14 +1,43 @@
-<script>
+<script lang="ts">
   import Link from "$lib/Link.svelte";
+  import { init } from "$lib/locale";
+  import type { User } from "$lib/client";
+  import { login } from "$lib/client";
+  import { onMount } from "svelte";
+
+  let user: User | null;
+
+  onMount(async () => {
+    user = await login();
+  });
 </script>
-<main class="flex">
-  <div class="container">
-    <Link href="/">Home</Link>
-  </div>
-  <div class="container flex-col main">
-    <slot />
-  </div>
-</main>
+
+{#await init()}
+  <p class="center-rl center-tb">Loading</p>
+{:then locale}
+    <main class="flex">
+    <div class="container center-rl flex-col">
+      <Link class="round" type="button" href="/"><span>{locale.home}</span></Link>
+      <Link class="round" type="button" href="/profile"><span>{locale.profile}</span></Link>
+    </div>
+    <div class="container-large flex-col">
+      {#if location.pathname === "/login" || user}
+        <slot />
+      {:else}
+        <div class="center-rl flex-col">
+          <p>{locale.loginRequired}</p>
+          <Link class="round center-tb" color="blue" type="button" href="/login">{locale.login}</Link>
+        </div>
+      {/if}
+    </div>
+    <div class="container center-rl flex-col">
+      <div class="round-soft highlight center-rl flex-col">
+        <Link type="button" href="https://github.com/identmous/identmous">GitHub</Link>
+        <Link type="button" href="https://github.com/identmous/identmous/issues">{locale.bugs}</Link>
+      </div>
+    </div>
+  </main>
+{/await}
 
 <style lang="scss">
   :root {
@@ -20,16 +49,32 @@
     align-items: center;
     justify-content: center;
     .flex-col {
+      display: flex;
       flex-direction: column;
-      width: 85vw;
+    }
+  }
+
+  @mixin container {
+    border-right: 1px solid gray;
+    padding: 5px;
+    height: 100vh;
+    * {
+      margin: 8px;
     }
   }
 
   .container {
-    border-right: 1px solid gray;
-    padding: 5px;
-    height: 100vh;
+    @include container();
     width: 15vw;
+  }
+
+  .container-large {
+    @include container();
+    width: 70vw;
+  }
+
+  .highlight {
+    background-color: #242424;
   }
 
   :global {
@@ -37,20 +82,33 @@
       box-sizing: border-box;
     }
 
-    html, body {
-      background-color: black;
-      color: white;
+    .round {
+      border-radius: 99999px;
     }
 
-    a {
-      text-decoration: none;
+    .round-soft {
+      border-radius: 4px;
+    }
+
+    html,
+    body {
+      background-color: #121212;
       color: white;
-      &.link {
-        color: rgb(29, 155, 240);
-        &:hover {
-          text-decoration: underline;
-        }
-      }
+      margin: 0;
+    }
+
+    .center-tb {
+      display: flex;
+      justify-content: center;
+    }
+
+    .center-rl {
+      display: flex;
+      align-items: center;
+    }
+
+    .line-bottom {
+      border-bottom: 1px solid gray;
     }
   }
 </style>

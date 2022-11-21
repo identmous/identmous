@@ -5,5 +5,5 @@
 </script>
 
 <h1>
-  {locale.welcome}
+  N
 </h1>
