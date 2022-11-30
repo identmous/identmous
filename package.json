@@ -29,7 +29,7 @@
   "type": "module",
   "dependencies": {
     "@sapphire/snowflake": "^3.2.2",
-    "d1-orm": "^0.7.0",
-    "sass": "^1.56.1"
+    "sass": "^1.56.1",
+    "svelte-turnstile": "^0.2.1"
   }
 }

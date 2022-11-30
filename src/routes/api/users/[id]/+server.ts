@@ -1,4 +1,5 @@
-import { ERROR_CODES } from "$lib/const";
+import type { DBUser } from "$lib/client";
+import { CODES } from "$lib/const";
 import type { RequestHandler } from "@sveltejs/kit";
 
 export const GET: RequestHandler = async ({ platform, params, request }) => {
@@ -12,12 +13,13 @@ export const GET: RequestHandler = async ({ platform, params, request }) => {
           ? atob(request.headers.get("Authorization")?.split(".")?.at(0)!)
           : params.id
       )
-      .first();
+      .first<Partial<DBUser>>();
+    delete result.password_hashed;
     return new Response(
       JSON.stringify(
         !!JSON.stringify(result)
-          ? result
-          : { code: ERROR_CODES.NOT_FOUND, message: `Could not find user with id "${params.id}".` }
+          ? { code: CODES.SUCCESS, ...result }
+          : { code: CODES.NOT_FOUND, message: `Could not find user with id "${params.id}".` }
       ),
       {
         headers: { "Content-type": "application/json" }
@@ -26,7 +28,7 @@ export const GET: RequestHandler = async ({ platform, params, request }) => {
   } else {
     return new Response(
       JSON.stringify({
-        code: ERROR_CODES.INVALID_ID,
+        code: CODES.INVALID_ID,
         message: "Id is invalid."
       })
     );

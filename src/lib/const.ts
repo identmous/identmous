@@ -1,4 +1,8 @@
-export const ERROR_CODES = {
-  INVALID_ID: 0,
-  NOT_FOUND: 1
+export const CODES = {
+  SUCCESS: 0,
+  INVALID_ID: 1,
+  NOT_FOUND: 2,
+  INVALID_LOGIN_INFO: 3,
+  INVALID_ACCOUNT: 4,
+  INVALID_CAPTCHA: 5
 } as const;

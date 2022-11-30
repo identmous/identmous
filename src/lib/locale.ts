@@ -14,7 +14,9 @@ export function kv(source: string): Record<string, string> {
 }
 
 export async function init() {
-  const lang: typeof supported[number] = supported.includes(navigator.language) ? navigator.language : "en";
+  const lang: typeof supported[number] = supported.includes(navigator.language)
+    ? navigator.language
+    : "en";
   current = kv(await (await fetch("/locales/" + lang + ".properties")).text());
 
   return current;
@@ -22,4 +24,8 @@ export async function init() {
 
 export function get() {
   return current;
+}
+
+export function format(...r: string[]): string {
+  return r.reduce((a, c, i) => a?.replace(new RegExp(`\\{${i}\\}`, "g"), c), r.shift()) as string;
 }

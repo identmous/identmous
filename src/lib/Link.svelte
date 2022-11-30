@@ -23,7 +23,7 @@
   }
 </script>
 
-<a {...$$restProps} class={classes} {href}><slot /></a>
+<a on:click {...$$restProps} class={classes} {href}><slot /></a>
 
 <style lang="scss">
   a {
