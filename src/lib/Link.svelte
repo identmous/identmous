@@ -41,8 +41,8 @@
     padding: 1rem 4rem;
     height: fit-content;
     align-items: center;
-    min-width: max-content;
-    max-width: 5vw;
+    //min-width: max-content;
+    max-width: max-content;
     &.color-default:hover {
       background-color: rgba(150, 150, 150, 0.1);
     }

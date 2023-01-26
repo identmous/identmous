@@ -58,12 +58,12 @@
 
   .container {
     @include container();
-    width: 25vw;
+    width: 20vw;
   }
 
   .container-large {
     @include container();
-    width: 50vw;
+    width: 60vw;
   }
 
   .highlight {

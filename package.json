@@ -30,6 +30,7 @@
   "dependencies": {
     "@sapphire/snowflake": "^3.2.2",
     "sass": "^1.56.1",
-    "svelte-turnstile": "^0.2.1"
+    "svelte-turnstile": "^0.2.1",
+    "sveltestrap": "^5.10.0"
   }
 }
