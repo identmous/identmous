@@ -18,7 +18,7 @@ export const POST: RequestHandler = async ({ platform, request }) => {
       JSON.stringify({ code: CODES.INVALID_CAPTCHA, message: "Turnstile token validate failed" })
     );
   console.log(platform.env)
-  const user = await platform.env.DB.prepare("SELECT * FROM users WHERE screen_name = ?")
+  const user = await platform.env.__D1_BETA__DB.prepare("SELECT * FROM users WHERE screen_name = ?")
     .bind(req.username)
     .first<DBUser>();
   if (

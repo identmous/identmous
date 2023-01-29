@@ -6,7 +6,7 @@ import type { RequestHandler } from "@sveltejs/kit";
 const snowflake = new Snowflake(new Date("2022-11-20T00:00:00.00Z"));
 
 export const GET: RequestHandler = async ({ platform, params }) => {
-  const posts = await platform.env.DB.prepare("SELECT * FROM posts WHERE author_id = ?")
+  const posts = await platform.env.__D1_BETA__DB.prepare("SELECT * FROM posts WHERE author_id = ?")
     .bind(params.id)
     .all<Post>();
   if (posts.results) {
