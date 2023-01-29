@@ -4,12 +4,9 @@ import type { UserConfig } from "vite";
 const config: UserConfig = {
   plugins: [sveltekit()],
   build: {
-    target: "es2020"
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      target: "es2020"
-    }
+    target: "es2020",
+    minify: "esbuild",
+    sourcemap: false
   }
 };
 

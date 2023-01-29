@@ -1,9 +1,9 @@
 <script lang="ts">
   import { Turnstile } from "svelte-turnstile";
   import { get } from "$lib/locale";
-  import Link from "$lib/Link.svelte";
   import { login } from "$lib/client";
   import { CODES } from "$lib/const";
+  import { TextField, Button } from "../../../attractions/attractions";
 
   const locale = get();
   let username = "";
@@ -19,44 +19,35 @@
   }
 </script>
 
-<div class="center-rl flex-col margin">
-  <input
-    on:keydown={(e) => {
-      if (e.code === "Enter") loginOnClick();
-    }}
-    bind:value={username}
-    type="text"
-  />
-  <input
-    on:keydown={(e) => {
-      if (e.code === "Enter") loginOnClick();
-    }}
-    bind:value={password}
-    type="password"
-  />
-  <Turnstile
-    on:turnstile-callback={(e) => (token = e.detail.token)}
-    siteKey="0x4AAAAAAABUMo1dcNjAIl1c"
-    theme="dark"
-  />
-  <Link on:click={loginOnClick} class="round center-tb" color="blue" type="button"
-    >{locale.login}</Link
-  >
-</div>
+<main>
+  <div class="center margin">
+    <TextField
+      on:keydown={(e) => {
+        if (e.detail.nativeEvent.code === "Enter") loginOnClick();
+      }}
+      bind:value={username}
+      type="text" />
+    <TextField
+      on:keydown={(e) => {
+        if (e.detail.nativeEvent.code === "Enter") loginOnClick();
+      }}
+      bind:value={password}
+      type="password" />
+    <Turnstile
+      on:turnstile-callback={(e) => (token = e.detail.token)}
+      siteKey="0x4AAAAAAABUMo1dcNjAIl1c"
+      theme="dark" />
+    <Button on:click={loginOnClick} filled>{locale.login}</Button>
+    <p>a</p>
+  </div>
+</main>
 
 <style lang="scss">
-  .margin {
-    * {
-      margin: 8px;
-    }
-  }
-
-  input {
-    background-color: #171717;
-    color: white;
-    border-style: solid;
-    border-color: gray;
-    border-radius: 999999999999999999px;
-    border-width: thin;
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 2em;
   }
 </style>

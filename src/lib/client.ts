@@ -60,8 +60,7 @@ export interface Post {
   id: string;
   author_id: string;
   reference_id?: string;
-  reference_type?: number;
-  content?: string;
+  content: string;
 }
 
 export interface PostsResponse {

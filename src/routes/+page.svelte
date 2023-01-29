@@ -1,9 +1,12 @@
 <script lang="ts">
   import { get } from "$lib/locale";
+  import { Card, H1 } from "../../attractions/attractions";
 
   const locale = get();
 </script>
 
-<h1>
-  {locale.welcome}
-</h1>
+<main>
+  <H1>
+    {locale.welcome}
+  </H1>
+</main>

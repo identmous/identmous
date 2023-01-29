@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS posts (
   id TEXT PRIMARY KEY,
   author_id TEXT NOT NULL,
   reference_id TEXT,
-  reference_type int,
-  content TEXT,
+  content TEXT NOT NULL,
   FOREIGN KEY (author_id) REFERENCES users (id)
 );

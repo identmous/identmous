@@ -1,117 +1,144 @@
 <script lang="ts">
-  import Link from "$lib/Link.svelte";
   import { init } from "$lib/locale";
   import type { User } from "$lib/client";
   import { fetchMe } from "$lib/client";
   import { onMount } from "svelte";
-
+  import {
+    Accordion,
+    AccordionSection,
+    Button,
+    Dialog,
+    H1,
+    Loading,
+    TextField,
+    Modal
+  } from "../../attractions/attractions";
+  import { HomeOutline, PersonOutline, PencilOutline, CloseOutline } from "svelte-ionicons";
+  let innerWidth: number;
   let user: User | null;
+  let isPostModalOpen = false;
+  let isPostButtonDisabled = false;
+  let postContent = "";
+  $: {
+    let isMobile = innerWidth < 1056;
+  }
 
   onMount(async () => {
     user = await fetchMe();
   });
+
+  async function postProcess() {
+    isPostButtonDisabled = true;
+    await fetch("/api/posts", {
+      method: "POST",
+      headers: {
+        Authorization: localStorage.getItem("token") || ""
+      },
+      body: JSON.stringify({ content: postContent })
+    }).catch(console.error);
+    isPostButtonDisabled = false;
+  }
 </script>
 
+<svelte:window bind:innerWidth />
+
 {#await init()}
-  <p class="center-rl center-tb">Loading</p>
+  <div class="center">
+    <Loading />
+  </div>
 {:then locale}
-  <main class="flex">
-    <div class="container center-rl flex-col">
-      <Link class="round" type="button" href="/"><span>{locale.home}</span></Link>
-      <Link class="round" type="button" href="/profile"><span>{locale.profile}</span></Link>
-    </div>
-    <div class="container-large flex-col">
+  <main class="padded extra">
+    <nav class="desktop left">
+      <Accordion>
+        {#if location.pathname === "/login" || user}
+          <Button href="/">
+            <div class="pad-right">
+              <HomeOutline />
+            </div>
+            {locale.home}
+          </Button>
+          <Button href="/profile">
+            <div class="pad-right">
+              <PersonOutline />
+            </div>
+            {locale.profile}
+          </Button>
+          <Button
+            filled
+            class="btn-extra center"
+            on:click={() => {
+              isPostModalOpen = true;
+            }}
+            ><div class="pad-right"><PencilOutline /></div>
+            <span>{locale.post}</span></Button>
+        {:else}
+          <Button filled href="/login">{locale.login}</Button>
+        {/if}
+      </Accordion>
+    </nav>
+    <article>
+      <Modal bind:open={isPostModalOpen} let:closeCallback>
+        <Dialog title={locale.post} {closeCallback}
+          ><TextField
+            error={postContent.length > 140 && locale.invalidContentLength}
+            multiline
+            on:keydown={(e) => {
+              if (
+                !isPostButtonDisabled &&
+                !e.detail.nativeEvent.repeat &&
+                e.detail.nativeEvent.key === "Enter" &&
+                e.detail.nativeEvent.ctrlKey
+              )
+                postProcess();
+            }}
+            bind:value={postContent} /><Button
+            on:click={postProcess}
+            bind:disabled={isPostButtonDisabled}
+            filled
+            class="btn-extra center btn-top-margin"
+            ><div class="pad-right"><PencilOutline /></div>
+            <span>{locale.post}</span></Button
+          ></Dialog>
+      </Modal>
       {#if location.pathname === "/login" || user}
         <slot />
       {:else}
-        <div class="center-rl flex-col">
-          <p>{locale.loginRequired}</p>
-          <Link class="round center-tb" color="blue" type="button" href="/login"
-            >{locale.login}</Link
-          >
+        <div class="center">
+          <Button filled href="/login">{locale.login}</Button>
         </div>
       {/if}
-    </div>
-    <div class="container center-rl flex-col">
-      <div class="round-soft highlight center-rl flex-col">
-        <Link type="button" href="https://github.com/identmous/identmous">GitHub</Link>
-        <Link type="button" href="https://github.com/identmous/identmous/issues">{locale.bugs}</Link
-        >
-      </div>
-    </div>
+    </article>
+    <nav class="desktop right">
+      <Accordion>
+        <Button href="https://github.com/identmous/identmous">GitHub</Button>
+        <Button href="https://github.com/identmous/identmous/issues">{locale.bugs}</Button>
+      </Accordion>
+    </nav>
   </main>
 {/await}
 
 <style lang="scss">
-  :root {
-    font-family: Arial, Helvetica, sans-serif;
-  }
+  @use "../../attractions/docs/static/css/global.scss";
+  @use "../../attractions/docs/static/css/routes/docs/layout";
+  @use "../../attractions/docs/static/css/containers/docs/desktop-navigation.scss";
+  @use "../../attractions/attractions/variables" as vars;
 
-  @mixin container {
-    border-right: 1px solid gray;
-    padding: 5px;
-    height: 100vh;
-    * {
-      margin: 8px;
-    }
-  }
-
-  .container {
-    @include container();
-    width: 20vw;
-  }
-
-  .container-large {
-    @include container();
-    width: 60vw;
-  }
-
-  .highlight {
-    background-color: #242424;
+  .pad-right {
+    padding-right: 1rem;
   }
 
   :global {
-    .flex {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      .flex-col {
-        display: flex;
-        flex-direction: column;
-      }
+    p {
+      color: vars.$main-text;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    .round {
-      border-radius: 99999px;
-    }
-
-    .round-soft {
-      border-radius: 4px;
-    }
-
-    html,
-    body {
-      background-color: #121212;
-      color: white;
-      margin: 0;
-    }
-
-    .center-tb {
-      display: flex;
+    .btn-extra {
+      width: 100%;
       justify-content: center;
     }
 
-    .center-rl {
-      display: flex;
-      align-items: center;
-    }
-
-    .line-bottom {
-      border-bottom: 1px solid gray;
+    .btn-top-margin {
+      margin-top: 1em;
     }
   }
 </style>
