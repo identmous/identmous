@@ -1,0 +1,3 @@
+[submodule "attractions"]
+	path = attractions
+	url = https://github.com/identmous/attractions
