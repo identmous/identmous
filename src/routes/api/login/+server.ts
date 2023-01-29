@@ -19,7 +19,7 @@ export const POST: RequestHandler = async ({ platform, request }) => {
     );
   const user = await platform.env.DB.prepare("SELECT * FROM users WHERE screen_name = ?")
     .bind(req.username)
-    .first<DBUser>();
+    .first<DBUser>().catch(console.error);
   if (
     user &&
     btoaUrlSafe(await crypto.subtle.digest("SHA-512", new TextEncoder().encode(req.password))) ===
