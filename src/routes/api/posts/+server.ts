@@ -5,7 +5,7 @@ import type { RequestHandler } from "./$types";
 
 // todo: validate referenece post
 export const POST: RequestHandler = async ({ platform, request }) => {
-  const user = await validateToken(request, platform.env.__D1_BETA__DB).catch((x: Response) => x);
+  const user = await validateToken(request, platform.env.DB).catch((x: Response) => x);
   // not DBUser.
   // todo: rename this
   if (user instanceof Response) return user;
@@ -15,11 +15,11 @@ export const POST: RequestHandler = async ({ platform, request }) => {
   const postId = SNOWFLAKE.generate();
   let query;
   if (post.reference_id) {
-    query = platform.env.__D1_BETA__DB.prepare(
+    query = platform.env.DB.prepare(
       "INSERT INTO posts (id, author_id, content, reference_id) VALUES (?, ?, ?, ?)"
     ).bind(postId.toString(), user.id, post.content, post.reference_id);
   } else {
-    query = platform.env.__D1_BETA__DB.prepare(
+    query = platform.env.DB.prepare(
       "INSERT INTO posts (id, author_id, content) VALUES (?, ?, ?)"
     ).bind(postId.toString(), user.id, post.content);
   }

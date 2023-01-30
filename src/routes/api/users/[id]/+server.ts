@@ -7,7 +7,7 @@ export const GET: RequestHandler = async ({ platform, params, request }) => {
     (params.id === "@me" && request.headers.get("Authorization")?.split(".")?.at(0)) ||
     !isNaN(Number(params.id))
   ) {
-    const result = await platform.env.__D1_BETA__DB.prepare("SELECT * from users WHERE id = ?")
+    const result = await platform.env.DB.prepare("SELECT * from users WHERE id = ?")
       .bind(
         params.id === "@me"
           ? atob(request.headers.get("Authorization")?.split(".")?.at(0)!)
