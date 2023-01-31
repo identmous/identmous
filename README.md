@@ -1,3 +1,8 @@
 # Identmous
 
-[identmous.com](https://identmous.com) sauce cord
+## publish
+- Use wrangler 2.9.0
+
+```js
+npm run publish
+```
