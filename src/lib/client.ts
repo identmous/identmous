@@ -1,9 +1,16 @@
+import { writable, type Writable } from "svelte/store";
 import type { CODES } from "./const";
 
+export const users: Writable<User[]> = writable([]);
+
 export async function fetchMe(): Promise<User | null> {
+  return await fetchUser("@me");
+}
+
+export async function fetchUser(id: string): Promise<User | null> {
   const token = localStorage.getItem("token");
   if (token) {
-    return await (await fetch("/api/users/@me", { headers: { Authorization: token } })).json();
+    return await (await fetch("/api/users/" + id, { headers: { Authorization: token } })).json();
   } else {
     return null;
   }
@@ -31,6 +38,15 @@ export async function login(
 
 export async function fetchPosts(id: string): Promise<PostsResponse> {
   return await (await fetch("/api/posts/" + id)).json<PostsResponse>();
+}
+
+export async function fetchTimeline(): Promise<Post[] | null> {
+  const token = localStorage.getItem("token");
+  if (token) {
+    return await (await fetch("/api/timeline", { headers: { Authorization: token } })).json();
+  } else {
+    return null;
+  }
 }
 
 export interface User {

@@ -38,7 +38,6 @@
       siteKey="0x4AAAAAAABUMo1dcNjAIl1c"
       theme="dark" />
     <Button on:click={loginOnClick} filled>{locale.login}</Button>
-    <p>a</p>
   </div>
 </main>
 

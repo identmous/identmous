@@ -8,7 +8,17 @@ const config = {
 
   kit: {
     adapter: adapter(),
-    csrf: { checkOrigin: false }
+    csp: {
+      mode: "auto",
+      directives: {
+        "default-src": [
+          "self",
+          "challenges.cloudflare.com",
+          "fonts.googleapis.com",
+          "fonts.gstatic.com"
+        ]
+      }
+    }
   }
 };
 

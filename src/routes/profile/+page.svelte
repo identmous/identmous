@@ -3,6 +3,7 @@
   import { fetchMe, fetchPosts } from "$lib/client";
   import { Snowflake } from "@sapphire/snowflake";
   import { Divider, H1 } from "../../../attractions/attractions";
+  import { SNOWFLAKE } from "$lib/const";
 
   const locale = get();
 </script>
@@ -32,7 +33,7 @@
           >{Intl.DateTimeFormat([], { dateStyle: "long" }).format(
             new Date(
               Number(
-                new Snowflake(new Date("2022-11-20T00:00:00.000Z")).decode(post?.id || "").timestamp
+                SNOWFLAKE.decode(post?.id || "").timestamp
               )
             )
           )}</span>

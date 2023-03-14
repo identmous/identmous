@@ -15,7 +15,7 @@
   } from "../../attractions/attractions";
   import { HomeOutline, PersonOutline, PencilOutline, CloseOutline } from "svelte-ionicons";
   let innerWidth: number;
-  let user: User | null;
+  let user: User;
   let isPostModalOpen = false;
   let isPostButtonDisabled = false;
   let postContent = "";
@@ -24,7 +24,7 @@
   }
 
   onMount(async () => {
-    user = await fetchMe();
+    user = (await fetchMe()) as User;
   });
 
   async function postProcess() {
@@ -100,7 +100,7 @@
             <span>{locale.post}</span></Button
           ></Dialog>
       </Modal>
-      {#if location.pathname === "/login" || user}
+      {#if location.pathname === "/login" || location.pathname === "/register" || user}
         <slot />
       {:else}
         <div class="center">
@@ -139,6 +139,10 @@
 
     .btn-top-margin {
       margin-top: 1em;
+    }
+
+    .text-field {
+      margin-bottom: 0.5em;
     }
   }
 </style>
