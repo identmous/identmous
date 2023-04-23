@@ -7,7 +7,7 @@ const { hashSync } = bcrypt;
 export const POST: RequestHandler = async ({ request, platform }) => {
   const payload = await request.json<RegisterRequest>();
   console.log(payload);
-  if (!payload.displayName.length || !payload.screenName.length || payload.password.length > 8)
+  if (!payload.displayName.length || !payload.screenName.length || payload.password.length < 8)
     return new Response(JSON.stringify({ code: CODES.INVALID_CONTENT_LENGTH }), { status: 400 });
   if (!validateTurnstileToken(payload.turnstileToken, platform!.env.TURNSTILE_SECRET_KEY))
     return new Response(JSON.stringify({ code: CODES.INVALID_CAPTCHA }), { status: 400 });

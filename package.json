@@ -4,19 +4,21 @@
   "private": true,
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "npm run patch && vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --plugin-search-dir . --check .",
     "format": "prettier --plugin-search-dir . --write .",
-    "publish": "npm run build && wrangler pages publish --bundle --no-bundle=false .svelte-kit/cloudflare"
+    "publish": "npm run build && wrangler pages publish --bundle --no-bundle=false .svelte-kit/cloudflare",
+    "patch": "node scripts/patch.js"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20221111.1",
     "@sveltejs/adapter-cloudflare": "^1.0.0-next.40",
     "@sveltejs/kit": "^1.0.0-next.589",
     "@types/bcryptjs": "^2.4.2",
+    "@types/html-escaper": "^3.0.0",
     "better-sqlite3": "^7.6.2",
     "carbon-preprocess-svelte": "^0.9.1",
     "prettier": "^2.6.2",
@@ -32,11 +34,13 @@
   },
   "type": "module",
   "dependencies": {
+    "@discordjs/collection": "^1.5.0",
     "@sapphire/snowflake": "^3.2.2",
     "bcryptjs": "^2.4.3",
+    "budoux": "^0.5.0",
+    "html-escaper": "^3.0.3",
     "sass": "^1.56.1",
     "svelte-ionicons": "^0.2.3",
-    "svelte-turnstile": "^0.2.1",
-    "sveltestrap": "^5.10.0"
+    "svelte-turnstile": "^0.2.1"
   }
 }

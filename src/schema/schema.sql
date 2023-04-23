@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
   display_name TEXT NOT NULL,
   password_hashed TEXT NOT NULL,
   is_active BOOLEAN NOT NULL DEFAULT 1,
-  bio TEXT
+  bio TEXT,
+  avatar_url TEXT NOT NULL DEFAULT "https://r2.identmous.com/favicon.jpg"
 );
 
 CREATE TABLE IF NOT EXISTS posts (
@@ -19,8 +20,8 @@ CREATE TABLE IF NOT EXISTS posts (
 
 CREATE TABLE IF NOT EXISTS follow_relation (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  follower_id TEXT NOT NULL,
-  following_id TEXT NOT NULL,
+  follower_id TEXT NOT NULL, -- フォロワーのID
+  following_id TEXT NOT NULL, -- フォローする相手のID
   FOREIGN KEY (follower_id) REFERENCES users(id),
   FOREIGN KEY (following_id) REFERENCES users(id),
   UNIQUE (follower_id, following_id)

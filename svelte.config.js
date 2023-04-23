@@ -15,7 +15,15 @@ const config = {
           "self",
           "challenges.cloudflare.com",
           "fonts.googleapis.com",
-          "fonts.gstatic.com"
+          "fonts.gstatic.com",
+          "r2.identmous.com"
+        ],
+        "style-src": [
+          "self",
+          "challenges.cloudflare.com",
+          "fonts.googleapis.com",
+          "fonts.gstatic.com",
+          "unsafe-inline"
         ]
       }
     }

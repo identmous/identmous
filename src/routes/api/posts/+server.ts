@@ -5,7 +5,7 @@ import type { RequestHandler } from "./$types";
 
 // todo: validate referenece post
 export const POST: RequestHandler = async ({ platform, request }) => {
-  const user = await validateToken(request, platform.env.DB).catch((x: Response) => x);
+  const user = await validateToken(request, platform!.env.DB).catch((x: Response) => x);
   // not DBUser.
   // todo: rename this
   if (user instanceof Response) return user;
