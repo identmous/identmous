@@ -1,0 +1,111 @@
+diff --git a/package.json b/package.json
+index e99f247c321c6691f44307b2e70585b8de20dbe2..7ebea7f31cb017257bc74cec5388a947dd079675 100644
+--- a/package.json
++++ b/package.json
+@@ -19,6 +19,7 @@
+     "kleur": "^4.1.5",
+     "magic-string": "^0.30.0",
+     "mime": "^3.0.0",
++    "miniflare": "^3.20230904.0",
+     "sade": "^1.8.1",
+     "set-cookie-parser": "^2.6.0",
+     "sirv": "^2.0.2",
+diff --git a/src/exports/vite/dev/index.js b/src/exports/vite/dev/index.js
+index d8e2c7b40102b055cb2e0c7b7831702a52d71f26..fefbeedf41d03dc3a35e108c83ee9c380fe3e40a 100644
+--- a/src/exports/vite/dev/index.js
++++ b/src/exports/vite/dev/index.js
+@@ -23,9 +23,10 @@ const cwd = process.cwd();
+  * @param {import('vite').ViteDevServer} vite
+  * @param {import('vite').ResolvedConfig} vite_config
+  * @param {import('types').ValidatedConfig} svelte_config
++ * @param {import('miniflare').Miniflare} miniflare
+  * @return {Promise<Promise<() => void>>}
+  */
+-export async function dev(vite, vite_config, svelte_config) {
++export async function dev(vite, vite_config, svelte_config, miniflare) {
+ 	if (should_polyfill) {
+ 		installPolyfills();
+ 	}
+@@ -504,6 +505,7 @@ export async function dev(vite, vite_config, svelte_config) {
+ 				}
+ 
+ 				const rendered = await server.respond(request, {
++					platform: { env: await miniflare.getBindings() },
+ 					getClientAddress: () => {
+ 						const { remoteAddress } = req.socket;
+ 						if (remoteAddress) return remoteAddress;
+diff --git a/src/exports/vite/index.js b/src/exports/vite/index.js
+index 94f242a1e468646c962375aee90e94a2f07b06c2..a468a7a278329f4b5d1c54b6da294c6a617ca503 100644
+--- a/src/exports/vite/index.js
++++ b/src/exports/vite/index.js
+@@ -30,6 +30,10 @@ export { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+ 
+ const cwd = process.cwd();
+ 
++/**
++ * @typedef {Partial<Omit<import('miniflare').WorkerOptions,'name' | 'script' | 'scriptPath' | 'modules' | 'modulesRoot' | 'modulesRules'> &Pick<import('miniflare').MiniflareOptions,'cachePersist' | 'd1Persist' | 'durableObjectsPersist' | 'kvPersist' | 'r2Persist'>>} miniflareOptions
++ */
++
+ /** @type {import('./types').EnforcedConfig} */
+ const enforced_config = {
+ 	appType: true,
+@@ -113,9 +117,10 @@ const warning_preprocessor = {
+ 
+ /**
+  * Returns the SvelteKit Vite plugins.
++ * @param {miniflareOptions} miniflare
+  * @returns {Promise<import('vite').Plugin[]>}
+  */
+-export async function sveltekit() {
++export async function sveltekit(miniflare) {
+ 	const svelte_config = await load_config();
+ 
+ 	/** @type {import('@sveltejs/vite-plugin-svelte').Options['preprocess']} */
+@@ -128,6 +133,16 @@ export async function sveltekit() {
+ 		preprocess = warning_preprocessor;
+ 	}
+ 
++	let mf = undefined;
++	if (miniflare) {
++		const { Miniflare } = await import('miniflare');
++		mf = new Miniflare({
++			modules: true,
++			script: 'export default { fetch: () => new Response(null, { status: 404 }) };',
++			...miniflare
++		});
++	}
++
+ 	/** @type {import('@sveltejs/vite-plugin-svelte').Options} */
+ 	const vite_plugin_svelte_options = {
+ 		configFile: false,
+@@ -142,7 +157,7 @@ export async function sveltekit() {
+ 		...svelte_config.vitePlugin
+ 	};
+ 
+-	return [...svelte(vite_plugin_svelte_options), ...kit({ svelte_config })];
++	return [...svelte(vite_plugin_svelte_options), ...kit({ svelte_config, miniflare: mf })];
+ }
+ 
+ // These variables live outside the `kit()` function because it is re-invoked by each Vite build
+@@ -162,10 +177,10 @@ let manifest_data;
+  * - https://rollupjs.org/guide/en/#build-hooks
+  * - https://rollupjs.org/guide/en/#output-generation-hooks
+  *
+- * @param {{ svelte_config: import('types').ValidatedConfig }} options
++ * @param {{ svelte_config: import('types').ValidatedConfig, miniflare: import('miniflare').Miniflare }} options
+  * @return {import('vite').Plugin[]}
+  */
+-function kit({ svelte_config }) {
++function kit({ svelte_config, miniflare }) {
+ 	const { kit } = svelte_config;
+ 	const out = `${kit.outDir}/output`;
+ 
+@@ -609,7 +624,7 @@ function kit({ svelte_config }) {
+ 		 * @see https://vitejs.dev/guide/api-plugin.html#configureserver
+ 		 */
+ 		async configureServer(vite) {
+-			return await dev(vite, vite_config, svelte_config);
++			return await dev(vite, vite_config, svelte_config, miniflare);
+ 		},
+ 
+ 		/**
