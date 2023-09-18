@@ -38,5 +38,10 @@
     "vite": "^4.4.9",
     "wrangler": "^3.4.0"
   },
-  "type": "module"
+  "type": "module",
+  "pnpm": {
+    "patchedDependencies": {
+      "@sveltejs/kit@1.25.0": "patches/@sveltejs__kit@1.25.0.patch"
+    }
+  }
 }
