@@ -1,13 +1,21 @@
-import type { Handle } from "@sveltejs/kit";
+import { CODES } from "$lib/consts";
+import { HttpError } from "$lib/errors";
+import type { HandleServerError } from "@sveltejs/kit";
 
-const headers = {
-  "X-Content-Type-Options": "nosniff",
-  "X-Frame-Options": "SAMEORIGIN",
-  "X-XSS-Protection": "1; mode=block"
-};
+export const handleError: HandleServerError = async ({ error }) => {
+  if (error instanceof HttpError) {
+    const response = (await error.toResponse().json()) as App.Error;
 
-export const handle: Handle = async ({ event, resolve }) => {
-  const response = await resolve(event);
-  for (const [key, value] of Object.entries(headers)) response.headers.set(key, value);
-  return response;
+    return response;
+  }
+
+  console.error(error);
+
+  return {
+    code: CODES.INTERNAL_ERROR,
+    message: "Internal Error",
+    data: {
+      error: "Internal Error",
+    },
+  };
 };
